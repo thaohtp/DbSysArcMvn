@@ -68,16 +68,28 @@ public class Utility {
 		
 		PriorityQueue<Integer> queue = new PriorityQueue<Integer>(10, (Comparator<Integer>)comparator);
 		// push elements into priority queue
-		for (int i = 0; i < inputStreamArray.size(); i++) {
-			GenericInputStreamInterface stream = inputStreamArray.get(i);
-			while (!stream.isEndOfStream()) {
-				Integer intTemp = stream.readNext();
-				if(intTemp != null){					
-					queue.add(intTemp);
+		// get each element from each stream then merge
+		
+		// this list is used to store streams which has reached end
+		List<Integer> endOfStreamList = new ArrayList<Integer>();
+		while(endOfStreamList.size() < inputStreamArray.size()){			
+			for (int i = 0; i < inputStreamArray.size(); i++) {
+				// if the stream is not end, continue to read next element
+				// if stream has reach end, skip this stream
+				if(!endOfStreamList.contains(i)){
+					GenericInputStreamInterface stream = inputStreamArray.get(i);
+
+					Integer intTemp = stream.readNext();
+					if(intTemp != null){					
+						queue.add(intTemp);
+					}
+					if (stream.isEndOfStream()) {
+						// close stream after reading
+						stream.close();
+						endOfStreamList.add(i);
+					}
 				}
 			}
-			// close stream after reading
-			stream.close();
 		}
 
 		// pop element from queue to output stream
@@ -107,7 +119,7 @@ public class Utility {
 		case BUFFERED_WITH_SIZE:
 			return new BufferedWithSizeInputStream(bufferSize);
 		case MAPPING:
-			return new MappingInputStream();
+			return new MappingInputStream(memCapacity);
 		default:
 			return new SystemInputStream();
 		}
@@ -129,7 +141,7 @@ public class Utility {
 		case BUFFERED_WITH_SIZE:
 			return new BufferedWithSizeOutputStream(bufferSize);
 		case MAPPING:
-			return new MappingOutputStream();
+			return new MappingOutputStream(memCapacity);
 		default:
 			return new SystemOutputStream();
 		}

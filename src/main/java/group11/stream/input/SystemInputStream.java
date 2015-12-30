@@ -24,11 +24,11 @@ public class SystemInputStream implements GenericInputStreamInterface{
 	public Integer readNext() throws IOException{
 		char nextChar = 0;
 		StringBuffer content = new StringBuffer("");
-		while((stream.available()>0 && nextChar != ' ' )){
+		while((stream.available()>0 && nextChar != ' ') ){
 			nextChar = (char) stream.read();
-			content.append(nextChar);				
+			content.append(nextChar);	
 		}		
-		if(content.toString().compareTo(" ") == 0 || content.toString().compareTo("") == 0)
+		if(content.toString().trim().isEmpty())
 		{
 			return null;
 		}

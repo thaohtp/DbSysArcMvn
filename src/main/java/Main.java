@@ -4,16 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import group11.test.CommandTestSuite;
-import group11.test.JmhBenchmarkTestSuite;
 
 public class Main {
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException, RunnerException {
 		System.out.println("---------------------------------------------------------");
 		System.out.println("------- WELCOME TO MERGE SORT PROJECT OF GROUP 11 -------");
 		System.out.println("---------------------------------------------------------");
@@ -25,7 +21,7 @@ public class Main {
 			System.out.println("2. Test read/write file");
 			System.out.println("3. Test merge sort integers");
 			System.out.println("0. EXIT");
-			do{
+			do{ 
 				System.out.println("Please enter the number of task you want to do: ");
 				s = bufferRead.readLine();
 			} while (s == null || s.compareTo("") == 0); 
@@ -50,7 +46,7 @@ public class Main {
 		// BENCHMARK FRAMEWORK INTEGRATION
 //		Options options = new OptionsBuilder()
 //				.include(JmhBenchmarkTestSuite.class.getSimpleName()).threads(1)
-//				.forks(1).shouldFailOnError(true).shouldDoGC(true).measurementIterations(1).warmupIterations(1).forks(10).build();
+//				.forks(1).shouldFailOnError(true).shouldDoGC(true).build();
 //		new Runner(options).run();
 	}
 }

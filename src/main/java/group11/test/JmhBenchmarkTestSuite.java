@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
@@ -31,7 +30,7 @@ public class JmhBenchmarkTestSuite {
 	private static final Integer DEFAULT_AVAILABLE_MEMORY = 10;
 	private static final Integer DEFAULT_NB_STREAM_PER_PASS = 3;
 
-	@Benchmark @BenchmarkMode(Mode.AverageTime) @OutputTimeUnit(TimeUnit.MICROSECONDS) @Fork()
+	@Benchmark @BenchmarkMode(Mode.AverageTime) @OutputTimeUnit(TimeUnit.MICROSECONDS)
 	public static void runMergeSortTestCaseWithoutTime() throws FileNotFoundException, IOException{
 		String readFilePath = TEST_DIRECTORY + BACK_FLASH_WINDOWS + "merge_sort_data" + BACK_FLASH_WINDOWS + "generate0.txt";
 		String resultFilePath = TEST_DIRECTORY + BACK_FLASH_WINDOWS + "merge_sort_data" + BACK_FLASH_WINDOWS + "merge_sort_result.txt";

@@ -27,7 +27,7 @@ public class BufferedInputStream implements GenericInputStreamInterface{
 			nextChar = (char) stream.read();
 			content.append(nextChar);				
 		}		
-		if(content.toString().compareTo(" ") == 0)
+		if(content.toString().trim().isEmpty())
 		{
 			return null;
 		}

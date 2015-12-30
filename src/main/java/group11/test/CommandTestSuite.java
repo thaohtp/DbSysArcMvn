@@ -47,15 +47,16 @@ public class CommandTestSuite {
 			System.out.println("\t 1. Read and print out single file (Test InputStream)");
 			System.out.println("\t 2. Read and write single file (Test InputStream and OutputStream)");
 			System.out.println(
-					"\t 3. Read all K files in specific directory and create copied file. This testcase is used for testing opening K streams, reading/writing each stream, N times");
+					"\t 3. Read all K files in specific directory and create copied file. This testcase is used for testing opening K streams parallel, reading/writing each stream, N times");
 			System.out.println("\t Enter the test you wanna run (default 1): ");
 			String s = bufferRead.readLine();
 			int testcase = 0;
-			if(s != null && s.compareTo("") != 0){
+			if (s != null && s.compareTo("") != 0) {
 				testcase = Integer.parseInt(s.trim());
 			}
 			if (testcase == 3) {
-				System.out.println("Sorry, this test is still in progress. Please choose another option" );
+//				System.out.println("Sorry, this test is still in progress. Please choose another option");
+				createReadWriteKStreamTest();
 			} else {
 				// Test case 2
 				if (testcase == 2) {
@@ -70,8 +71,8 @@ public class CommandTestSuite {
 			e.printStackTrace();
 		}
 	}
-	
-	private static void createReadTest() throws IOException{
+
+	private static void createReadTest() throws IOException {
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Enter file path: ");
 		String s = bufferRead.readLine();
@@ -100,10 +101,10 @@ public class CommandTestSuite {
 		}
 		System.out.println("Task completed!");
 	}
-	
-	private static void createReadWriteKStreamTest() throws IOException{
+
+	private static void createReadWriteKStreamTest() throws IOException {
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("Enter directory path of reading file: ");
+		System.out.println("Enter directory path of reading file (we will read all files in directory): ");
 		String s = bufferRead.readLine();
 		String readingDir = s.trim();
 		System.out.println("Enter directory path of copied files: ");
@@ -111,49 +112,10 @@ public class CommandTestSuite {
 		String copiedDir = s.trim();
 		System.out.println("Enter expected file path of file which store execution time: ");
 		s = bufferRead.readLine();
-		String execTimeDir = s.trim();
-		System.out.println(
-				"The file will be generated with name in format <Prefix><Sequence_time>_<Sequence_number>.<suffix>");
-		System.out.println("Enter file name prefix: ");
-		s = bufferRead.readLine();
-		String prefix = s.trim();
-		System.out.println("Enter file name suffix: ");
-		s = bufferRead.readLine();
-		String suffix = s.trim();
+		String execTimeFilePath = s.trim();
 		System.out.println("Enter N times: ");
 		s = bufferRead.readLine();
 		int N = Integer.parseInt(s.trim());
-		System.out.println("Enter implementation number you want to test: ");
-		System.out.println("\t 1. Stream use system call: ");
-		System.out.println("\t 2. Buffered stream: ");
-		System.out.println("\t 3. Buffered stream with size: ");
-		System.out.println("\t 4. Mapping stream: ");
-		s = bufferRead.readLine();
-		ImplementationEnum implEnum = ImplementationEnum.getImplementationEnum(Integer.parseInt(s.trim()));
-		if (implEnum == ImplementationEnum.BUFFERED_WITH_SIZE) {
-			System.out.println("\t -> Enter buffer size: ");
-			s = bufferRead.readLine();
-			Integer bufferSize = Integer.parseInt(s.trim());
-		} else {
-			if (implEnum == ImplementationEnum.MAPPING) {
-				System.out.println("\t -> Enter mapping capacity size: ");
-				s = bufferRead.readLine();
-				Integer memCapacity = Integer.parseInt(s.trim());
-			} else {
-			}
-		}
-		System.out.println("Task completed! Please check your file at " + copiedDir);
-	}
-	
-	private static void createReadWriteTest() throws IOException{
-		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-		System.out.println("Enter input file path: ");
-		String s = bufferRead.readLine();
-		String inputFilePath = s.trim();
-		System.out.println("Enter output file path: ");
-		s = bufferRead.readLine();
-		String outputFilePath = s.trim();
-		
 		// get parameter for input stream
 		System.out.println("Enter implementation number you want to test for READING: ");
 		System.out.println("\t 1. Stream use system call: ");
@@ -175,7 +137,7 @@ public class CommandTestSuite {
 				readMemCapacity = Integer.parseInt(s.trim());
 			}
 		}
-		
+
 		// get parameter for output stream
 		System.out.println("Enter implementation number you want to test for WRITING: ");
 		System.out.println("\t 1. Stream use system call: ");
@@ -194,10 +156,68 @@ public class CommandTestSuite {
 			if (writeImpl == ImplementationEnum.MAPPING) {
 				System.out.println("\t -> Enter mapping capacity size: ");
 				s = bufferRead.readLine();
-				writeBufferSize = Integer.parseInt(s.trim());
-			} 
+				writeMemCapacity = Integer.parseInt(s.trim());
+			}
 		}
-		TestUtility.runReadWriteSingleTestCase(inputFilePath, outputFilePath, readImpl, readBufferSize, readMemCapacity, writeImpl, writeBufferSize, writeMemCapacity);
+		TestUtility.runReadWriteKParallelFilesTestCase(readingDir, copiedDir, execTimeFilePath,
+				readImpl, readBufferSize, readMemCapacity, writeImpl, writeBufferSize, writeMemCapacity, N);
+		System.out.println("Task completed! Please check your file at " + copiedDir);
+	}
+
+	private static void createReadWriteTest() throws IOException {
+		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("Enter input file path: ");
+		String s = bufferRead.readLine();
+		String inputFilePath = s.trim();
+		System.out.println("Enter output file path: ");
+		s = bufferRead.readLine();
+		String outputFilePath = s.trim();
+
+		// get parameter for input stream
+		System.out.println("Enter implementation number you want to test for READING: ");
+		System.out.println("\t 1. Stream use system call: ");
+		System.out.println("\t 2. Buffered stream: ");
+		System.out.println("\t 3. Buffered stream with size: ");
+		System.out.println("\t 4. Mapping stream: ");
+		s = bufferRead.readLine();
+		ImplementationEnum readImpl = ImplementationEnum.getImplementationEnum(Integer.parseInt(s.trim()));
+		Integer readBufferSize = 0;
+		Integer readMemCapacity = 0;
+		if (readImpl == ImplementationEnum.BUFFERED_WITH_SIZE) {
+			System.out.println("\t -> Enter buffer size: ");
+			s = bufferRead.readLine();
+			readBufferSize = Integer.parseInt(s.trim());
+		} else {
+			if (readImpl == ImplementationEnum.MAPPING) {
+				System.out.println("\t -> Enter mapping capacity size: ");
+				s = bufferRead.readLine();
+				readMemCapacity = Integer.parseInt(s.trim());
+			}
+		}
+
+		// get parameter for output stream
+		System.out.println("Enter implementation number you want to test for WRITING: ");
+		System.out.println("\t 1. Stream use system call: ");
+		System.out.println("\t 2. Buffered stream: ");
+		System.out.println("\t 3. Buffered stream with size: ");
+		System.out.println("\t 4. Mapping stream: ");
+		s = bufferRead.readLine();
+		ImplementationEnum writeImpl = ImplementationEnum.getImplementationEnum(Integer.parseInt(s.trim()));
+		Integer writeBufferSize = 0;
+		Integer writeMemCapacity = 0;
+		if (writeImpl == ImplementationEnum.BUFFERED_WITH_SIZE) {
+			System.out.println("\t -> Enter buffer size: ");
+			s = bufferRead.readLine();
+			writeBufferSize = Integer.parseInt(s.trim());
+		} else {
+			if (writeImpl == ImplementationEnum.MAPPING) {
+				System.out.println("\t -> Enter mapping capacity size: ");
+				s = bufferRead.readLine();
+				writeMemCapacity = Integer.parseInt(s.trim());
+			}
+		}
+		TestUtility.runReadWriteSingleTestCase(inputFilePath, outputFilePath, readImpl, readBufferSize, readMemCapacity,
+				writeImpl, writeBufferSize, writeMemCapacity);
 		System.out.println("Task completed!Please check your file at " + outputFilePath);
 	}
 
